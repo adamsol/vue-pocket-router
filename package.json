@@ -1,7 +1,7 @@
 {
   "name": "vue-pocket-router",
   "description": "Tiny replacement for vue-router that fully reloads the view after navigation.",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "keywords": [
     "vue",
     "router",

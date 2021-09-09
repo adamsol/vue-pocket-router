@@ -3,6 +3,7 @@ vue-pocket-router
 
 [![License](https://img.shields.io/github/license/adamsol/vue-pocket-router.svg)](https://github.com/adamsol/vue-pocket-router/blob/master/LICENSE.txt)
 [![CI](https://github.com/adamsol/vue-pocket-router/actions/workflows/ci.yml/badge.svg)](https://github.com/adamsol/vue-pocket-router/actions)
+[![npm](https://img.shields.io/npm/v/vue-pocket-router.svg)](https://www.npmjs.com/package/vue-pocket-router)
 
 A tiny router implementation for Vue.js 2.6, which will reload the current view when an already active link is clicked
 and will always recreate your components after navigation.
@@ -19,6 +20,28 @@ which results in lifecycle hooks not firing when they are expected.
 See https://forum.vuejs.org/t/rerendering-component-on-route-param-change-recalling-created-hooks/9536.
 
 This library can replace `vue-router` in simple cases to avoid hacking it.
+
+Installation
+------------
+
+```sh
+npm install vue-pocket-router
+```
+
+```js
+import VuePocketRouter from 'vue-pocket-router';
+
+Vue.use(VuePocketRouter);
+
+new Vue({
+    // ...
+    router: new VuePocketRouter({
+        routes: [
+            // ...
+        ],
+    }),
+});
+```
 
 Usage
 -----
