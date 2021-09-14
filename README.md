@@ -36,9 +36,7 @@ Vue.use(VuePocketRouter);
 new Vue({
     // ...
     router: new VuePocketRouter({
-        routes: [
-            // ...
-        ],
+        // options
     }),
 });
 ```
@@ -48,6 +46,15 @@ Usage
 
 The basic API is very similar to `vue-router`'s, so pretty much everything from https://router.vuejs.org/guide/
 and https://router.vuejs.org/guide/essentials/dynamic-matching.html applies.
+
+Available constructor options:
+* `routes` (required) – array of objects with the following fields:
+  * `path` (required)
+  * `component` (required)
+  * `name` (optional) – for reverse URL resolving
+  * `props` (optional) – object with values of props to pass to the component
+  * `meta` (optional) – any additional data to store with the route (empty object by default)
+* `base` (optional) – base URL the application is hosted under, e.g. `'/app'` (note the lack of a trailing slash; empty string by default)
 
 Some differences to `vue-router`:
 * `vue-pocket-router` operates in HTML5 history mode only.
