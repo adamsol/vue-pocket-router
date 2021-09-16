@@ -62,10 +62,14 @@ Some differences to `vue-router`:
   Parameters are still accessible as `$route.params`.
 * Values of the `to` prop in `router-link` component and the argument of `$router.push(location)` method must be valid URL paths, not objects.
   Use `$router.resolve(name, params)` method, or its shorthand `$url(name, params)`, to obtain URL for a named route with given parameters.
-* `vue-pocket-router` uses [url-pattern](https://github.com/snd/url-pattern) as the path matching library
-  (as opposed to [path-to-regexp](https://github.com/pillarjs/path-to-regexp) used by `vue-router`).
+* `vue-pocket-router` uses [`url-pattern`](https://github.com/snd/url-pattern) as the path matching library
+  (as opposed to [`path-to-regexp`](https://github.com/pillarjs/path-to-regexp) used by `vue-router`).
   See its documentation for how to build your route patterns.
 * Query strings and hash fragments, as well as many other features, are currently not supported.
+
+If you're using [`vue-meta`](https://github.com/nuxt/vue-meta),
+note that `afterNavigation` callback and `refreshOnceOnNavigation` option won't work,
+since `vue-pocket-router` doesn't implement navigation guards.
 
 Examples
 --------
