@@ -5,6 +5,6 @@ module.exports = {
     testMatch: ['**/test/**/*.js'],
     transform: {
         '^.+\\.js$': 'babel-jest',
-        '^.+\\.vue$': 'vue-jest',
+        '^.+\\.vue$': '@vue/vue3-jest',
     },
 };

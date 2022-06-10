@@ -10,6 +10,7 @@ export default {
         name: 'VuePocketRouter',
         globals: {
             'url-pattern': 'UrlPattern',
+            'vue': 'Vue',
         },
     },
     plugins: [
@@ -18,5 +19,6 @@ export default {
     ],
     external: [
         'url-pattern',
+        'vue',
     ],
 };

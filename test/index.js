@@ -1,5 +1,5 @@
 
-import { createLocalVue, mount } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 
 import Main from './components/Main';
 import About from './components/views/About';
@@ -7,13 +7,10 @@ import Error from './components/views/Error';
 import Hello from './components/views/Hello';
 import Index from './components/views/Index';
 
-import VuePocketRouter from '../src';
-
-const localVue = createLocalVue();
-localVue.use(VuePocketRouter);
+import { createRouter } from '../src';
 
 function init({ base = '', wildcard = true } = {}) {
-    const router = new VuePocketRouter({
+    const router = createRouter({
         base,
         routes: [
             { path: '/', component: Index, name: 'index' },
@@ -24,7 +21,7 @@ function init({ base = '', wildcard = true } = {}) {
             { path: wildcard ? '*' : '/404', component: Error, props: { code: 404 } },
         ],
     });
-    return mount(Main, { localVue, router });
+    return mount(Main, { global: { plugins: [router] } });
 }
 
 test('index view is rendered initially', () => {

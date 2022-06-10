@@ -5,8 +5,10 @@ vue-pocket-router
 [![CI](https://github.com/adamsol/vue-pocket-router/actions/workflows/ci.yml/badge.svg)](https://github.com/adamsol/vue-pocket-router/actions)
 [![npm](https://img.shields.io/npm/v/vue-pocket-router.svg)](https://www.npmjs.com/package/vue-pocket-router)
 
-A tiny router implementation for Vue.js 2.6, which will reload the current view when an already active link is clicked
+A tiny router implementation for Vue.js 3.2+, which will reload the current view when an already active link is clicked
 and will always recreate your components after navigation.
+
+For Vue.js 2.6, see `vue-pocket-router@1`.
 
 Why?
 ----
@@ -21,6 +23,9 @@ See https://forum.vuejs.org/t/rerendering-component-on-route-param-change-recall
 
 This library can replace `vue-router` in simple cases to avoid hacking it.
 
+Note that in `vue-router@4` there is an undocumented `force` parameter that can be used to change behaviour of a specific link,
+but [it's not supported by the developers](https://github.com/vuejs/router/issues/1257#issuecomment-1048097494).
+
 Installation
 ------------
 
@@ -29,16 +34,11 @@ npm install vue-pocket-router
 ```
 
 ```js
-import VuePocketRouter from 'vue-pocket-router';
+import { createRouter } from 'vue-pocket-router';
 
-Vue.use(VuePocketRouter);
-
-new Vue({
-    // ...
-    router: new VuePocketRouter({
-        // options
-    }),
-});
+app.use(createRouter({
+    // options
+}));
 ```
 
 Usage
@@ -47,7 +47,7 @@ Usage
 The basic API is very similar to `vue-router`'s, so pretty much everything from https://router.vuejs.org/guide/
 and https://router.vuejs.org/guide/essentials/dynamic-matching.html applies.
 
-Available constructor options:
+Available options:
 * `routes` (required) – array of objects with the following fields:
   * `path` (required)
   * `component` (required)

@@ -9,9 +9,9 @@ jobs:
     strategy:
       matrix:
         include:
-          - { node: 12.x, platform: ubuntu-latest }
-          - { node: 14.x, platform: windows-latest }
-          - { node: 16.x, platform: macos-latest }
+          - { node: 14.x, platform: ubuntu-latest }
+          - { node: 16.x, platform: windows-latest }
+          - { node: 18.x, platform: macos-latest }
     runs-on: ${{ matrix.platform }}
     steps:
       - uses: actions/checkout@v2

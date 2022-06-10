@@ -1,31 +1,30 @@
 
+import { shallowReactive } from 'vue';
+
 import RouterLink from './components/router-link.vue';
 import RouterView from './components/router-view.vue';
 import Router from './router';
 
-Router.install = function(Vue) {
-    let router;
+export function createRouter(options) {
+    const router = shallowReactive(new Router(options));
 
-    Vue.mixin({
-        beforeCreate() {
-            if (this.$options.router) {
-                router = Vue.observable(this.$options.router);
-            }
-        },
-        methods: {
-            $url(name, params) {
-                return router.resolve(name, params);
+    router.install = function(app) {
+        app.mixin({
+            methods: {
+                $url(name, params) {
+                    return router.resolve(name, params);
+                },
             },
-        },
-    });
+        });
 
-    Object.defineProperties(Vue.prototype, {
-        $router: { get: () => router },
-        $route: { get: () => router.route },
-    });
+        Object.defineProperties(app.config.globalProperties, {
+            $router: { get: () => router },
+            $route: { get: () => router.route },
+        });
 
-    Vue.component('router-link', RouterLink);
-    Vue.component('router-view', RouterView);
-};
+        app.component('router-link', RouterLink);
+        app.component('router-view', RouterView);
+    };
 
-export default Router;
+    return router;
+}
