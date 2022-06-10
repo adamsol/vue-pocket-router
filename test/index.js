@@ -66,7 +66,7 @@ test('history and location are properly managed on navigation', async () => {
     expect(history.length).toBe(3);
 });
 
-test('router listens to popstate event', () => {
+test('router listens to popstate event', async () => {
     // `history.back()` doesn't seem to work in jsdom.
     // https://github.com/jsdom/jsdom/issues/1565
     window.addEventListener = jest.fn();
@@ -74,9 +74,12 @@ test('router listens to popstate event', () => {
     const wrapper = init();
     expect(window.addEventListener).toHaveBeenCalledWith('popstate', expect.any(Function));
     expect(wrapper.vm.$route.key).toBe(1);
+    expect(wrapper.emitted()['route-changed']).toBeUndefined();
 
     window.addEventListener.mock.calls[0][1]();
     expect(wrapper.vm.$route.key).toBe(2);
+    await wrapper.vm.$nextTick();
+    expect(wrapper.emitted()['route-changed']).toHaveLength(1);
 });
 
 test('clicking a link navigates to another view', async () => {
@@ -85,12 +88,12 @@ test('clicking a link navigates to another view', async () => {
     await wrapper.find('a.about').trigger('click');
     expect(wrapper.find('#view').text()).toBe('About page');
     expect(wrapper.vm.$route.name).toBe('about');
-    expect(wrapper.emitted()['route-changed'].length).toBe(1);
+    expect(wrapper.emitted()['route-changed']).toHaveLength(1);
 
     await wrapper.find('a.index').trigger('click');
     expect(wrapper.find('#view').text()).toBe('Index page');
     expect(wrapper.vm.$route.name).toBe('index');
-    expect(wrapper.emitted()['route-changed'].length).toBe(2);
+    expect(wrapper.emitted()['route-changed']).toHaveLength(2);
 });
 
 test('clicking an active link recreates the view', async () => {

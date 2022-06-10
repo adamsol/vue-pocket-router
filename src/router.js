@@ -10,9 +10,15 @@ export default class Router {
             meta: {},
             ...route,
         }));
-        this.route = { key: 0 };
+    }
 
+    _init() {
+        this.route = { key: 0 };
         this._match();
+
+        // Note that because of how Vue's `reactive` works, we can't add an event listener in the constructor,
+        // since `this` in the callback would refer to the original object without reactivity.
+        // https://stackoverflow.com/questions/67894487/vue-3-reactivity-not-triggered-from-inside-a-class-instance
         window.addEventListener('popstate', () => this._match());
     }
 

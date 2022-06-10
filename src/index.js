@@ -7,6 +7,7 @@ import Router from './router';
 
 export function createRouter(options) {
     const router = shallowReactive(new Router(options));
+    router._init();
 
     router.install = function(app) {
         app.mixin({
