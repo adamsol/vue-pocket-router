@@ -44,5 +44,7 @@
   "files": [
     "/dist/*.js"
   ],
-  "main": "dist/vue-pocket-router.js"
+  "main": "dist/vue-pocket-router.cjs.js",
+  "module": "dist/vue-pocket-router.esm.js",
+  "unpkg": "dist/vue-pocket-router.global.js"
 }
