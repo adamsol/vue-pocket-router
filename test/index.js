@@ -33,15 +33,19 @@ test('$router and $route objects are available in components', () => {
     const wrapper = init();
     expect(wrapper.vm.$route.name).toBe('index');
     expect(wrapper.vm.$route.path).toBe('/');
+    expect(wrapper.vm.$route.query).toEqual({});
+    expect(wrapper.vm.$route.hash).toBe('');
     expect(wrapper.vm.$route).toBe(wrapper.vm.$router.route);
     expect(wrapper.findComponent(Index).vm.$router).toBe(wrapper.vm.$router);
     expect(wrapper.findComponent(Index).vm.$route).toBe(wrapper.vm.$route);
 });
 
-test('reverse URL resolving work', () => {
+test('reverse URL resolving works', () => {
     const wrapper = init();
     expect(wrapper.vm.$router.resolve('index')).toBe('/');
     expect(wrapper.vm.$url('hello', { user_name: 'test' })).toBe('/hello/test');
+    expect(wrapper.vm.$router.resolve('index', { answer: 42 })).toBe('/?answer=42');
+    expect(wrapper.vm.$url('greetings', { search: 'abc&xyz', user_name: 'john' })).toBe('/greetings/john?search=abc%26xyz');
 });
 
 test('history and location are properly managed on navigation', async () => {
@@ -58,12 +62,34 @@ test('history and location are properly managed on navigation', async () => {
     expect(history.length).toBe(2);
     expect(location.pathname).toBe('/hello/world');
 
-    await wrapper.find('a.about').trigger('click');
-    expect(history.length).toBe(3);
-    expect(location.pathname).toBe('/about');
+    for (let i = 0; i < 2; ++i) {
+        await wrapper.find('a.about').trigger('click');
+        expect(history.length).toBe(3);
+        expect(location.pathname).toBe('/about');
+    }
 
-    await wrapper.find('a.about').trigger('click');
-    expect(history.length).toBe(3);
+    for (let i = 0; i < 2; ++i) {
+        await wrapper.vm.$router.push('/about?query');
+        expect(history.length).toBe(4);
+        expect(location.search).toBe('?query');
+    }
+
+    for (let i = 0; i < 2; ++i) {
+        await wrapper.vm.$router.push('/about?query#hash');
+        expect(history.length).toBe(5);
+        expect(location.hash).toBe('#hash');
+    }
+});
+
+test('query strings and hash fragments are properly handled', async () => {
+    const wrapper = init();
+
+    await wrapper.vm.$router.push('/?test&value=qwerty&encoded=%26+%3F#anchor');
+    expect(wrapper.vm.$route.query.test).toBe('');
+    expect(wrapper.vm.$route.query.value).toBe('qwerty');
+    expect(wrapper.vm.$route.query.encoded).toBe('& ?');
+    expect(wrapper.vm.$route.query.anchor).toBeUndefined();
+    expect(wrapper.vm.$route.hash).toBe('#anchor');
 });
 
 test('router listens to popstate event', async () => {

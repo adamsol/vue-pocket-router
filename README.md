@@ -8,8 +8,6 @@ vue-pocket-router
 A tiny router implementation for Vue.js 3.2+, which will reload the current view when an already active link is clicked
 and will always recreate your components after navigation.
 
-For Vue.js 2.6, see `vue-pocket-router@1`.
-
 Why?
 ----
 
@@ -60,16 +58,12 @@ Some differences to `vue-router`:
 * `vue-pocket-router` operates in HTML5 history mode only.
 * Matched URL parameters will be automatically passed to components as props, so there is no need to add `props: true` in your routes.
   Parameters are still accessible as `$route.params`.
-* Values of the `to` prop in `router-link` component and the argument of `$router.push(location)` method must be valid URL paths, not objects.
+* Values of the `to` prop in `router-link` component and the argument of `$router.push(url)` method must be valid URL strings, not objects.
   Use `$router.resolve(name, params)` method, or its shorthand `$url(name, params)`, to obtain URL for a named route with given parameters.
-* `vue-pocket-router` uses [`url-pattern`](https://github.com/snd/url-pattern) as the path matching library
-  (as opposed to [`path-to-regexp`](https://github.com/pillarjs/path-to-regexp) used by `vue-router`).
+  If `params` object contains additional keys other than the route's named segments, they will be appended as a query string.
+* `vue-pocket-router` uses [`url-pattern`](https://github.com/snd/url-pattern) as the path matching library.
   See its documentation for how to build your route patterns.
-* Query strings and hash fragments, as well as many other features, are currently not supported.
-
-If you're using [`vue-meta`](https://github.com/nuxt/vue-meta),
-note that `afterNavigation` callback and `refreshOnceOnNavigation` option won't work,
-since `vue-pocket-router` doesn't implement navigation guards.
+* Navigation guards (among other features) are not implemented. You can use a `$route` watcher instead.
 
 Examples
 --------
