@@ -1,8 +1,5 @@
-(function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('vue'), require('url-pattern')) :
-    typeof define === 'function' && define.amd ? define(['exports', 'vue', 'url-pattern'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.VuePocketRouter = {}, global.Vue, global.UrlPattern));
-})(this, (function (exports, vue, UrlPattern) { 'use strict';
+var VuePocketRouter = (function (exports, vue, UrlPattern) {
+    'use strict';
 
     function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
@@ -45,6 +42,12 @@
 
     script.render = render;
     script.__file = "src/components/router-view.vue";
+
+    function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
+
+    function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+
+    function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
 
     function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
 
@@ -101,23 +104,25 @@
         value: function _match() {
           var params;
           var route = this.routes.find(function (route) {
-            return params = route.pattern.match(window.location.pathname);
+            return params = route.pattern.match(location.pathname);
           });
 
           if (route === undefined) {
-            throw new Error("no route matching the current path: ".concat(window.location.pathname));
+            throw new Error("no route matching the current path: ".concat(location.pathname));
           }
 
           this.route = _objectSpread(_objectSpread({}, route), {}, {
             params: params,
+            query: Object.fromEntries(new URLSearchParams(location.search)),
+            hash: location.hash,
             key: this.route.key + 1
           });
         }
       }, {
         key: "push",
-        value: function push(path) {
-          if (path !== window.location.pathname) {
-            window.history.pushState({}, '', path);
+        value: function push(url) {
+          if (url !== location.pathname + location.search + location.hash) {
+            history.pushState({}, '', url);
           }
 
           this._match();
@@ -133,7 +138,29 @@
             throw new Error("no route named \"".concat(name, "\""));
           }
 
-          return route.pattern.stringify(params);
+          var query_params = _objectSpread({}, params);
+
+          var _iterator = _createForOfIteratorHelper(route.pattern.names),
+              _step;
+
+          try {
+            for (_iterator.s(); !(_step = _iterator.n()).done;) {
+              var key = _step.value;
+              delete query_params[key];
+            }
+          } catch (err) {
+            _iterator.e(err);
+          } finally {
+            _iterator.f();
+          }
+
+          var url = route.pattern.stringify(params);
+
+          if (Object.keys(query_params).length) {
+            url += '?' + new URLSearchParams(query_params);
+          }
+
+          return url;
         }
       }]);
 
@@ -176,4 +203,6 @@
 
     Object.defineProperty(exports, '__esModule', { value: true });
 
-}));
+    return exports;
+
+})({}, Vue, UrlPattern);
