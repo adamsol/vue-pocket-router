@@ -62,6 +62,10 @@ test('history and location are properly managed on navigation', async () => {
     expect(history.length).toBe(2);
     expect(location.pathname).toBe('/hello/world');
 
+    await wrapper.vm.$router.replace('/hello/earth');
+    expect(history.length).toBe(2);
+    expect(location.pathname).toBe('/hello/earth');
+
     for (let i = 0; i < 2; ++i) {
         await wrapper.find('a.about').trigger('click');
         expect(history.length).toBe(3);
@@ -84,12 +88,14 @@ test('history and location are properly managed on navigation', async () => {
 test('query strings and hash fragments are properly handled', async () => {
     const wrapper = init();
 
-    await wrapper.vm.$router.push('/?test&value=qwerty&encoded=%26+%3F#anchor');
-    expect(wrapper.vm.$route.query.test).toBe('');
-    expect(wrapper.vm.$route.query.value).toBe('qwerty');
-    expect(wrapper.vm.$route.query.encoded).toBe('& ?');
-    expect(wrapper.vm.$route.query.anchor).toBeUndefined();
-    expect(wrapper.vm.$route.hash).toBe('#anchor');
+    for (const method of ['push', 'replace']) {
+        await wrapper.vm.$router[method]('/?test&value=qwerty&encoded=%26+%3F#anchor');
+        expect(wrapper.vm.$route.query.test).toBe('');
+        expect(wrapper.vm.$route.query.value).toBe('qwerty');
+        expect(wrapper.vm.$route.query.encoded).toBe('& ?');
+        expect(wrapper.vm.$route.query.anchor).toBeUndefined();
+        expect(wrapper.vm.$route.hash).toBe('#anchor');
+    }
 });
 
 test('router listens to popstate event', async () => {
@@ -142,47 +148,53 @@ test('parameters are properly passed to components', async () => {
     const wrapper = init();
     expect(wrapper.vm.$route.params).toEqual({});
 
-    await wrapper.vm.$router.push('/hello/world');
-    expect(wrapper.find('#view').text()).toBe('Hello, world!');
-    expect(wrapper.findComponent(Hello).vm.title).toBe('Hello');
-    expect(wrapper.findComponent(Hello).vm.user_name).toBe('world');
-    expect(wrapper.vm.$route.name).toBe('hello');
-    expect(wrapper.vm.$route.params).toEqual({ user_name: 'world' });
+    for (const method of ['push', 'replace']) {
+        await wrapper.vm.$router[method]('/hello/world');
+        expect(wrapper.find('#view').text()).toBe('Hello, world!');
+        expect(wrapper.findComponent(Hello).vm.title).toBe('Hello');
+        expect(wrapper.findComponent(Hello).vm.user_name).toBe('world');
+        expect(wrapper.vm.$route.name).toBe('hello');
+        expect(wrapper.vm.$route.params).toEqual({ user_name: 'world' });
 
-    await wrapper.vm.$router.push('/greetings/test_123');
-    expect(wrapper.find('#view').text()).toBe('Greetings, test_123!');
-    expect(wrapper.findComponent(Hello).vm.title).toBe('Greetings');
-    expect(wrapper.findComponent(Hello).vm.user_name).toBe('test_123');
-    expect(wrapper.vm.$route.name).toBe('greetings');
-    expect(wrapper.vm.$route.params).toEqual({ user_name: 'test_123' });
+        await wrapper.vm.$router[method]('/greetings/test_123');
+        expect(wrapper.find('#view').text()).toBe('Greetings, test_123!');
+        expect(wrapper.findComponent(Hello).vm.title).toBe('Greetings');
+        expect(wrapper.findComponent(Hello).vm.user_name).toBe('test_123');
+        expect(wrapper.vm.$route.name).toBe('greetings');
+        expect(wrapper.vm.$route.params).toEqual({ user_name: 'test_123' });
 
-    await wrapper.vm.$router.push('/forbidden');
-    expect(wrapper.find('#view').text()).toBe('Error 403');
-    expect(wrapper.findComponent(Error).vm.code).toBe(403);
-    expect(wrapper.vm.$route.name).toBeUndefined();
-    expect(wrapper.vm.$route.params).toEqual({});
+        await wrapper.vm.$router[method]('/forbidden');
+        expect(wrapper.find('#view').text()).toBe('Error 403');
+        expect(wrapper.findComponent(Error).vm.code).toBe(403);
+        expect(wrapper.vm.$route.name).toBeUndefined();
+        expect(wrapper.vm.$route.params).toEqual({});
 
-    await wrapper.vm.$router.push('/non-existent');
-    expect(wrapper.find('#view').text()).toBe('Error 404');
-    expect(wrapper.findComponent(Error).vm.code).toBe(404);
-    expect(wrapper.vm.$route.path).toBe('*');
-    expect(wrapper.vm.$route.params._).toBe('/non-existent');
+        await wrapper.vm.$router[method]('/non-existent');
+        expect(wrapper.find('#view').text()).toBe('Error 404');
+        expect(wrapper.findComponent(Error).vm.code).toBe(404);
+        expect(wrapper.vm.$route.path).toBe('*');
+        expect(wrapper.vm.$route.params._).toBe('/non-existent');
+    }
 });
 
 test('meta object is stored properly', async () => {
     const wrapper = init();
     expect(wrapper.vm.$route.meta).toEqual({});
 
-    await wrapper.vm.$router.push('/forbidden');
-    expect(wrapper.vm.$route.meta).toEqual({ login_required: true });
+    for (const method of ['push', 'replace']) {
+        await wrapper.vm.$router[method]('/forbidden');
+        expect(wrapper.vm.$route.meta).toEqual({ login_required: true });
 
-    await wrapper.vm.$router.push('/about');
-    expect(wrapper.vm.$route.meta).toEqual({});
+        await wrapper.vm.$router[method]('/about');
+        expect(wrapper.vm.$route.meta).toEqual({});
+    }
 });
 
 test('exceptions are thrown with proper error messages', () => {
     const wrapper = init({ wildcard: false });
-    expect(() => wrapper.vm.$router.push('/non-existent')).toThrow('no route matching the current path: /non-existent');
+    for (const method of ['push', 'replace']) {
+        expect(() => wrapper.vm.$router[method]('/non-existent')).toThrow('no route matching the current path: /non-existent');
+    }
     expect(() => wrapper.vm.$router.resolve('forbidden')).toThrow('no route named "forbidden"');
     expect(() => wrapper.vm.$url('hello')).toThrow('no values provided for key `user_name`');  // From url-pattern
 });
@@ -197,13 +209,15 @@ test('base parameter works', async () => {
     expect(wrapper.find('#view').text()).toBe('About page');
     expect(location.pathname).toBe('/app/about');
 
-    await wrapper.vm.$router.push('/app/hello/base');
-    expect(wrapper.find('#view').text()).toBe('Hello, base!');
-    expect(wrapper.vm.$route.name).toBe('hello');
+    for (const method of ['push', 'replace']) {
+        await wrapper.vm.$router[method]('/app/hello/base');
+        expect(wrapper.find('#view').text()).toBe('Hello, base!');
+        expect(wrapper.vm.$route.name).toBe('hello');
 
-    await wrapper.vm.$router.push('/app/app');
-    expect(wrapper.find('#view').text()).toBe('Error 404');
+        await wrapper.vm.$router[method]('/app/app');
+        expect(wrapper.find('#view').text()).toBe('Error 404');
 
-    expect(wrapper.vm.$router.resolve('index')).toBe('/app/');
-    expect(() => wrapper.vm.$router.push('/')).toThrow('no route matching the current path: /');
+        expect(wrapper.vm.$router.resolve('index')).toBe('/app/');
+        expect(() => wrapper.vm.$router[method]('/')).toThrow('no route matching the current path: /');
+    }
 });

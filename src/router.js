@@ -45,6 +45,11 @@ export default class Router {
         this._match();
     }
 
+    replace(url) {
+        history.replaceState({}, '', url);
+        this._match();
+    }
+
     resolve(name, params) {
         const route = this.routes.find(route => route.name === name);
         if (route === undefined) {

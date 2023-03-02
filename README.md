@@ -58,7 +58,7 @@ Some differences to `vue-router`:
 * `vue-pocket-router` operates in HTML5 history mode only.
 * Matched URL parameters will be automatically passed to components as props, so there is no need to add `props: true` in your routes.
   Parameters are still accessible as `$route.params`.
-* Values of the `to` prop in `router-link` component and the argument of `$router.push(url)` method must be valid URL strings, not objects.
+* Values of the `to` prop in `router-link` component and the argument of `$router.push(url)`/`$router.replace(url)` methods must be valid URL strings, not objects.
   Use `$router.resolve(name, params)` method, or its shorthand `$url(name, params)`, to obtain URL for a named route with given parameters.
   If `params` object contains additional keys other than the route's named segments, they will be appended as a query string.
 * `vue-pocket-router` uses [`url-pattern`](https://github.com/snd/url-pattern) as the path matching library.
