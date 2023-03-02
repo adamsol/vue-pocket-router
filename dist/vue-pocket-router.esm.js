@@ -124,6 +124,13 @@ var Router = /*#__PURE__*/function () {
       this._match();
     }
   }, {
+    key: "replace",
+    value: function replace(url) {
+      history.replaceState({}, '', url);
+
+      this._match();
+    }
+  }, {
     key: "resolve",
     value: function resolve(name, params) {
       var route = this.routes.find(function (route) {
