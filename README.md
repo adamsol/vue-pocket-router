@@ -61,6 +61,7 @@ Some differences to `vue-router`:
 * Values of the `to` prop in `router-link` component and the argument of `$router.push(url)`/`$router.replace(url)` methods must be valid URL strings, not objects.
   Use `$router.resolve(name, params)` method, or its shorthand `$url(name, params)`, to obtain URL for a named route with given parameters.
   If `params` object contains additional keys other than the route's named segments, they will be appended as a query string.
+* To access current query string values, use `$route.query` (for single values) or `$route.queries` (for arrays).
 * `vue-pocket-router` uses [`url-pattern`](https://github.com/snd/url-pattern) as the path matching library.
   See its documentation for how to build your route patterns.
 * Navigation guards (among other features) are not implemented. You can use a `$route` watcher instead.

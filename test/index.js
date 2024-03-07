@@ -42,10 +42,15 @@ test('$router and $route objects are available in components', () => {
 
 test('reverse URL resolving works', () => {
     const wrapper = init();
-    expect(wrapper.vm.$router.resolve('index')).toBe('/');
-    expect(wrapper.vm.$url('hello', { user_name: 'test' })).toBe('/hello/test');
-    expect(wrapper.vm.$router.resolve('index', { answer: 42 })).toBe('/?answer=42');
-    expect(wrapper.vm.$url('greetings', { search: 'abc&xyz', user_name: 'john' })).toBe('/greetings/john?search=abc%26xyz');
+    for (const [args, result] of [
+        [['index'], '/'],
+        [['hello', { user_name: 'test' }], '/hello/test'],
+        [['greetings', { search: 'abc&xyz', user_name: 'john' }], '/greetings/john?search=abc%26xyz'],
+        [['index', { answer: [42, 'qwerty'] }], '/?answer=42&answer=qwerty'],
+    ]) {
+        expect(wrapper.vm.$router.resolve(...args)).toBe(result);
+        expect(wrapper.vm.$url(...args)).toBe(result);
+    }
 });
 
 test('history and location are properly managed on navigation', async () => {
@@ -89,11 +94,15 @@ test('query strings and hash fragments are properly handled', async () => {
     const wrapper = init();
 
     for (const method of ['push', 'replace']) {
-        await wrapper.vm.$router[method]('/?test&value=qwerty&encoded=%26+%3F#anchor');
+        await wrapper.vm.$router[method]('/?test&value=duplicate&value=qwerty&encoded=%26+%3F#anchor');
         expect(wrapper.vm.$route.query.test).toBe('');
         expect(wrapper.vm.$route.query.value).toBe('qwerty');
         expect(wrapper.vm.$route.query.encoded).toBe('& ?');
         expect(wrapper.vm.$route.query.anchor).toBeUndefined();
+        expect(wrapper.vm.$route.queries.test).toEqual(['']);
+        expect(wrapper.vm.$route.queries.value).toEqual(['duplicate', 'qwerty']);
+        expect(wrapper.vm.$route.queries.encoded).toEqual(['& ?']);
+        expect(wrapper.vm.$route.queries.anchor).toBeUndefined();
         expect(wrapper.vm.$route.hash).toBe('#anchor');
     }
 });

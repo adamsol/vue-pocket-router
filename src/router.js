@@ -25,14 +25,21 @@ export default class Router {
     _match() {
         let params;
         const route = this.routes.find(route => params = route.pattern.match(location.pathname));
-
         if (route === undefined) {
             throw new Error(`no route matching the current path: ${location.pathname}`);
+        }
+        const url_search_params = new URLSearchParams(location.search);
+        const query = Object.fromEntries(url_search_params);
+        const queries = {};
+        for (const [key, value] of url_search_params) {
+            queries[key] ??= [];
+            queries[key].push(value);
         }
         this.route = {
             ...route,
             params,
-            query: Object.fromEntries(new URLSearchParams(location.search)),
+            query,
+            queries,
             hash: location.hash,
             key: this.route.key + 1,
         };
@@ -61,7 +68,17 @@ export default class Router {
         }
         let url = route.pattern.stringify(params);
         if (Object.keys(query_params).length) {
-            url += '?' + new URLSearchParams(query_params);
+            const url_search_params = new URLSearchParams();
+            for (const [key, value] of Object.entries(query_params)) {
+                if (Array.isArray(value)) {
+                    for (const v of value) {
+                        url_search_params.append(key, v);
+                    }
+                } else {
+                    url_search_params.append(key, value);
+                }
+            }
+            url += '?' + url_search_params;
         }
         return url;
     }
